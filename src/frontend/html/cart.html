@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Diva Cosmetics - Cart</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins', sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background:linear-gradient(135deg,#faf7ff,#ffffff);
+        }
+
+        .topbar{
+            width:100%;
+            height:70px;
+            background:white;
+            box-shadow:0 5px 20px rgba(0,0,0,0.06);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 30px;
+        }
+
+       .logo{
+    font-family:'Great Vibes', cursive;
+    font-size:30px;
+    color:#8d63c7;
+}
+
+    h1{
+    font-family:'Great Vibes', cursive;
+    font-size:48px;
+    color:#8d63c7;
+}
+        .menu{
+            display:flex;
+            gap:20px;
+            align-items:center;
+        }
+
+        .menu a{
+            text-decoration:none;
+            color:#777;
+            font-weight:500;
+        }
+
+        .cart-btn{
+            padding:8px 12px;
+            border-radius:12px;
+            background:#f3e8ff;
+            color:#8d63c7;
+            font-weight:600;
+        }
+
+        .container{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:20px;
+            padding:30px;
+        }
+
+        .cart-items{
+            background:white;
+            border-radius:18px;
+            padding:20px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        .title{
+            font-size:22px;
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        .item{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:15px;
+            border-bottom:1px solid #eee;
+        }
+
+        .item-name{
+            color:#777;
+        }
+
+        .price{
+            color:#8d63c7;
+            font-weight:600;
+        }
+
+        .summary{
+            background:white;
+            border-radius:18px;
+            padding:20px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+            height:fit-content;
+        }
+
+        .summary h2{
+            color:#8d63c7;
+            margin-bottom:15px;
+        }
+
+        .line{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:10px;
+            color:#777;
+        }
+
+        .total{
+            margin-top:15px;
+            font-size:18px;
+            font-weight:700;
+            color:#8d63c7;
+        }
+
+        .btn{
+            width:100%;
+            margin-top:20px;
+            padding:12px;
+            border:none;
+            border-radius:14px;
+            background:linear-gradient(135deg,#f3a6ff,#b69cff);
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+        }
+
+        .btn:disabled{
+            opacity:0.6;
+            cursor:not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="logo">Diva Cosmetics</div>
+
+    <div class="menu">
+        <a href="/frontend/html/admin_main_page.html">Home</a>
+        <a href="#">Women Care</a>
+        <a href="#">Men Care</a>
+        <a href="#">Cosmetics</a>
+        <a href="#">Accessories</a>
+        <div class="cart-btn">🛒 Cart</div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- CART ITEMS -->
+    <div class="cart-items">
+        <div class="title">Your Cart 🛒</div>
+        <div id="cartContainer"></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary" id="summaryBox">
+        <h2>Order Summary</h2>
+
+        <div class="line">
+            <span>Subtotal</span>
+            <span>0 MDL</span>
+        </div>
+
+        <div class="line">
+            <span>Shipping</span>
+            <span>Free</span>
+        </div>
+
+        <div class="total">Total: 0 MDL</div>
+
+        <button class="btn" onclick="pay()">Pay with Stripe</button>
+    </div>
+
+</div>
+<script>
+
+    async function loadCart() {
+
+        const res = await fetch("/cart");
+        const products = await res.json();
+
+        const container = document.getElementById("cartContainer");
+
+        let html = "";
+        let total = 0;
+
+        products.forEach(product => {
+            total += product.price;
+
+            html += `
+                <div class="item">
+                    <div class="item-name">${product.name}</div>
+                    <div class="price">${product.price} MDL</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        updateSummary(total);
+    }
+
+    function updateSummary(total) {
+
+        const summary = document.getElementById("summaryBox");
+
+        summary.innerHTML = `
+            <h2>Order Summary</h2>
+
+            <div class="line">
+                <span>Subtotal</span>
+                <span>${total} MDL</span>
+            </div>
+
+            <div class="line">
+                <span>Shipping</span>
+                <span>Free</span>
+            </div>
+
+            <div class="total">Total: ${total} MDL</div>
+
+            <!-- 🔥 IMPORTANT: redirect simplu -->
+            <button class="btn" onclick="pay()">Pay with Stripe</button>
+        `;
+    }
+
+    // 🔥 NO FETCH, NO JSON, NO BUGS
+ function pay() {
+
+    const cartData = {
+        products: [],
+        total: 0
+    };
+
+    document.querySelectorAll(".item").forEach(item => {
+
+        const name = item.querySelector(".item-name").innerText;
+        const priceText = item.querySelector(".price").innerText;
+
+        const price = parseFloat(priceText); // ok pentru "120 MDL"
+
+        cartData.products.push({ name, price });
+        cartData.total += price;
+    });
+
+    localStorage.setItem("cartData", JSON.stringify(cartData));
+
+    // ✅ FIX IMPORTANT (path corect)
+    window.location.href = "/frontend/html/payment.html";
+}
+
+    loadCart();
+
+</script>
+
+</body>
+</html>

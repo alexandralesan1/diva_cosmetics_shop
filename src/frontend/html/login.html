@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Cosmetic Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/css/login.css">
+
+    <style>
+        .google-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .google-text {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+h1{
+    font-family:'Great Vibes', cursive;
+    font-size:42px;
+    color:#8d63c7;
+    text-align:center;
+    margin-bottom:20px;
+}
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: white;
+            border: 2px solid #eee;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        /* 🔥 BACK BUTTON */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-size: 18px;
+            color: #8d63c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            background: #f3e8ff;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 BACK BUTTON -->
+<button class="back-btn" onclick="goHome()">←</button>
+
+<div class="circle1"></div>
+<div class="circle2"></div>
+
+<div class="login-container">
+
+    <h1>Diva Cosmetics</h1>
+
+    <form id="loginForm">
+
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="email">
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password">
+        </div>
+
+        <button type="submit" class="login-btn">Sign In</button>
+
+        <div id="result"></div>
+
+    </form>
+
+    <div class="bottom-text">
+        Don’t have an account?
+        <a href="/frontend/html/register.html">Create account</a>
+    </div>
+
+    <div class="google-section">
+        <p class="google-text">or continue with</p>
+
+        <button class="google-btn" onclick="goToGoogleRegister()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                 width="20">
+            Continue with Google
+        </button>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const response = await fetch("http://localhost:8080/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const text = await response.text();
+        document.getElementById("result").innerText = text;
+    });
+
+    function goToGoogleRegister() {
+        window.location.href = "/frontend/html/google_register.html";
+    }
+
+    function goHome() {
+       window.location.href = "/";
+    }
+
+
+</script>
+
+</body>
+</html>

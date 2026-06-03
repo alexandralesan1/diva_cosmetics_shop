@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Google Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/css/login.css">
+
+    <style>
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 14px;
+            background: white;
+            border: 2px solid #eee;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        h1{
+    font-family:'Great Vibes', cursive;
+    font-size:42px;
+    color:#8d63c7;
+    text-align:center;
+    margin-bottom:20px;
+}
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="circle1"></div>
+<div class="circle2"></div>
+
+<div class="login-container">
+
+    <h1>Google Registration</h1>
+    <p>Continue with your Google account</p>
+
+    <button class="google-btn" onclick="registerWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+             width="20">
+        Continue with Google
+    </button>
+
+    <div class="bottom-text">
+        Back to
+        <a href="/frontend/html/login.html">Login</a>
+    </div>
+
+</div>
+
+<script>
+    function registerWithGoogle() {
+        // 🔥 IMPORTANT: pornim OAuth flow real
+        window.location.href = "http://localhost:8080/google-login";
+    }
+</script>
+
+</body>
+</html>

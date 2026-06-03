@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            height:100vh;
+            display:flex;
+            background:white;
+        }
+
+        .sidebar{
+            width:220px;
+            background:white;
+            box-shadow:5px 0 20px rgba(0,0,0,0.05);
+            padding:20px;
+        }
+
+        .sidebar h2{
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        .menu-item{
+            padding:12px;
+            margin-bottom:10px;
+            border-radius:12px;
+            cursor:pointer;
+            color:#666;
+            transition:0.3s;
+        }
+
+        .menu-item:hover{
+            background:#f3e8ff;
+            color:#8d63c7;
+        }
+
+        .main{
+            flex:1;
+            padding:30px;
+            overflow:auto;
+        }
+
+        .title{
+            font-size:30px;
+            color:#8d63c7;
+            margin-bottom:25px;
+        }
+
+        .cards{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+            margin-bottom:30px;
+        }
+
+        .card{
+            background:white;
+            border-radius:16px;
+            padding:20px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        .card h3{
+            color:#777;
+            margin-bottom:10px;
+        }
+
+        .card p{
+            font-size:30px;
+            color:#8d63c7;
+            font-weight:bold;
+        }
+
+        .analytics{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+        }
+
+        .chart-card{
+            background:white;
+            border-radius:16px;
+            padding:20px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        .chart-card h3{
+            color:#777;
+            margin-bottom:15px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>Admin</h2>
+
+    <div class="menu-item" onclick="goToAdminPageMain()">
+        Dashboard
+    </div>
+
+    <div class="menu-item" onclick="goToAddCareProduct()">
+        Add Product Care
+    </div>
+
+    <div class="menu-item" onclick="goToAddAccessories()">
+        Add Accessories
+    </div>
+
+    <div class="menu-item" onclick="goToAddMakeup()">
+        Add Make Up
+    </div>
+
+    <div class="menu-item" onclick="goToOperations()">
+        Operations
+    </div>
+
+    <div class="menu-item" onclick="goToOrdersPage()">
+        Orders
+    </div>
+
+</div>
+
+<div class="main">
+
+    <div class="title">
+        Dashboard Analytics
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Pending Orders</h3>
+            <p id="pendingCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Delivered Orders</h3>
+            <p id="deliveredCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Orders This Month</h3>
+            <p id="monthlyCount">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Products (All Categories)</h3>
+            <p id="productsTotal">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Brands</h3>
+            <p id="brandCount">0</p>
+        </div>
+
+    </div>
+
+    <div class="analytics">
+
+        <div class="chart-card">
+            <h3>Pending vs Delivered</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Orders This Month</h3>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function goToAdminPageMain(){
+        window.location.href="/frontend/html/admin_main_page.html";
+    }
+
+    function goToOperations(){
+        window.location.href="/frontend/html/update_delete_admin.html";
+    }
+
+    function goToAddCareProduct(){
+        window.location.href="/frontend/html/product_care_admin.html";
+    }
+
+    function goToAddAccessories(){
+        window.location.href="/frontend/html/accesories_admin.html";
+    }
+
+    function goToAddMakeup(){
+        window.location.href="/frontend/html/makeup_admin.html";
+    }
+
+    function goToOrdersPage(){
+        window.location.href="/frontend/html/admin_orders_page.html";
+    }
+
+
+    fetch("/admin/analytics")
+    .then(response => response.json())
+    .then(data => {
+
+        // =====================
+        // NUMBERS (CARDS)
+        // =====================
+        document.getElementById("pendingCount").innerText =
+            data.pending;
+
+        document.getElementById("deliveredCount").innerText =
+            data.delivered;
+
+        document.getElementById("monthlyCount").innerText =
+            data.monthlyOrders;
+
+        document.getElementById("productsTotal").innerText =
+            data.productsTotal;
+
+        document.getElementById("brandCount").innerText =
+            data.brandCount;
+
+
+        // =====================
+        // CHART 1: STATUS
+        // =====================
+        new Chart(document.getElementById("statusChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["Pending", "Delivered"],
+                datasets: [{
+                    data: [
+                        data.pending,
+                        data.delivered
+                    ],
+                    backgroundColor: ["#f3a6ff", "#b69cff"]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+
+        // =====================
+        // CHART 2: MONTHLY ORDERS
+        // =====================
+        new Chart(document.getElementById("monthlyChart"), {
+            type: "bar",
+            data: {
+                labels: ["Current Month"],
+                datasets: [{
+                    label: "Orders",
+                    data: [
+                        data.monthlyOrders
+                    ],
+                    backgroundColor: "#b69cff"
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+
+        // =====================
+        // CHART 3: PRODUCTS vs BRANDS
+        // =====================
+        new Chart(document.getElementById("productBrandChart"), {
+            type: "bar",
+            data: {
+                labels: ["Products", "Brands"],
+                datasets: [{
+                    label: "Count",
+                    data: [
+                        data.productsTotal,
+                        data.brandCount
+                    ],
+                    backgroundColor: ["#f3a6ff", "#b69cff"]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

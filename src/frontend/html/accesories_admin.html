@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Accessories</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins', sans-serif;
+        }
+
+        body{
+            height:100vh;
+            display:flex;
+            background:white;
+            overflow:hidden;
+        }
+
+        .circle1,.circle2{
+            position:absolute;
+            border-radius:50%;
+            z-index:0;
+            filter:blur(10px);
+        }
+
+        .circle1{
+            width:300px;
+            height:300px;
+            background:#f7c8ff;
+            top:-80px;
+            left:-80px;
+            opacity:0.5;
+        }
+
+        .circle2{
+            width:350px;
+            height:350px;
+            background:#d7c5ff;
+            bottom:-120px;
+            right:-120px;
+            opacity:0.5;
+        }
+
+        .sidebar{
+            width:220px;
+            background:white;
+            box-shadow:5px 0 20px rgba(0,0,0,0.05);
+            padding:20px;
+            z-index:1;
+        }
+
+        .sidebar h2{
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        .menu-item{
+            padding:12px;
+            margin-bottom:10px;
+            border-radius:12px;
+            cursor:pointer;
+            color:#666;
+            transition:0.3s;
+        }
+
+        .menu-item:hover{
+            background:#f3e8ff;
+            color:#8d63c7;
+        }
+
+        .main{
+            flex:1;
+            display:flex;
+            gap:5px;
+            padding:30px;
+            z-index:1;
+            overflow:auto;
+            justify-content:flex-start;
+        }
+
+        .form-area{
+            flex:0.9;
+            margin-left:100px;
+        }
+
+        .title{
+            font-size:28px;
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+
+        .row{
+            display:flex;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+
+        .field{
+            display:flex;
+            flex-direction:column;
+        }
+
+        label{
+            font-size:13px;
+            color:#666;
+            margin-bottom:4px;
+        }
+
+        input,select,textarea{
+            width:260px;
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:10px;
+            outline:none;
+            font-size:14px;
+        }
+
+        textarea{
+            height:70px;
+            resize:none;
+        }
+
+        button{
+            width:180px;
+            padding:10px;
+            border:none;
+            border-radius:12px;
+            background:linear-gradient(135deg,#f3a6ff,#b69cff);
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+            transition:0.3s;
+            margin-top:10px;
+        }
+
+        button:hover{
+            transform:translateY(-2px);
+        }
+
+        .preview{
+            flex:0.8;
+            width:350px;
+            background:white;
+            border-radius:18px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.08);
+            padding:20px;
+            height:fit-content;
+            margin-right:130px;
+        }
+
+        .preview h3{
+            color:#8d63c7;
+            margin-bottom:15px;
+        }
+
+        .preview-img{
+            width:100%;
+            border-radius:12px;
+            background:#f3e8ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
+            margin-bottom:15px;
+            aspect-ratio:1 / 1;
+            height:350px;
+        }
+
+        .preview-img img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .preview p{
+            font-size:14px;
+            color:#666;
+            margin:6px 0;
+        }
+
+        .preview strong{
+            color:#333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="circle1"></div>
+<div class="circle2"></div>
+
+<div class="sidebar">
+    <h2>Admin</h2>
+
+    <div class="menu-item" onclick="goToAdminPageMain()">
+        Dashboard
+    </div>
+
+    <div class="menu-item" onclick="goToAddCareProduct()">
+        Add Product Care
+    </div>
+
+    <div class="menu-item" onclick="goToAddAccessories()">
+        Add Accessories
+    </div>
+
+    <div class="menu-item" onclick="goToAddMakeup()">
+        Add Make Up
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="form-area">
+
+        <div class="title">Add Accessories</div>
+
+        <form id="productForm">
+
+            <div class="row">
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" id="name">
+                </div>
+
+                <div class="field">
+                    <label>Brand</label>
+                    <input type="text" id="brand">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label>Product Range</label>
+                    <input type="text" id="range">
+                </div>
+
+                <div class="field">
+                    <label>Product Series</label>
+                    <input type="text" id="series">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label>Purpose</label>
+                    <input type="text" id="purpose">
+                </div>
+
+                <div class="field">
+                    <label>Quantity</label>
+                    <input type="text" id="quantity">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label>Image</label>
+                    <input type="file" id="image">
+                </div>
+
+                <div class="field">
+                    <label>CN Code</label>
+                    <input type="text" id="cn">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label>Usage Method</label>
+                    <textarea id="usage"></textarea>
+                </div>
+
+                <div class="field">
+                    <label>Description</label>
+                    <textarea id="description"></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label>Category</label>
+                    <select id="category">
+                        <option>Women Accessories</option>
+                        <option>Men Accessories</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Price</label>
+                    <input type="number" id="price">
+                </div>
+            </div>
+
+            <button type="submit">Create Product</button>
+
+        </form>
+    </div>
+
+    <div class="preview">
+        <h3>Live Preview</h3>
+
+        <div class="preview-img" id="imgBox">No image</div>
+
+        <p><strong>Name:</strong> <span id="p_name"></span></p>
+        <p><strong>Brand:</strong> <span id="p_brand"></span></p>
+        <p><strong>Series:</strong> <span id="p_series"></span></p>
+        <p><strong>Range:</strong> <span id="p_range"></span></p>
+        <p><strong>Purpose:</strong> <span id="p_purpose"></span></p>
+        <p><strong>Quantity:</strong> <span id="p_quantity"></span></p>
+        <p><strong>Usage Method:</strong> <span id="p_usage"></span></p>
+        <p><strong>Description:</strong> <span id="p_description"></span></p>
+        <p><strong>CN Code:</strong> <span id="p_cn"></span></p>
+        <p><strong>Category:</strong> <span id="p_category"></span></p>
+        <p><strong>Price:</strong> <span id="p_price"></span></p>
+    </div>
+
+</div>
+
+<script>
+
+    function goToAdminPageMain(){
+      window.location.href ="/frontend/html/admin_main_page.html";
+      }
+
+      function goToAddCareProduct(){
+          window.location.href = "/frontend/html/product_care_admin.html";
+      }
+      function goToAddAccessories(){
+      window.location.href = "/frontend/html/accesories_admin.html";
+  }
+
+     function goToAddMakeup(){
+    window.location.href = "/frontend/html/makeup_admin.html";
+  }
+      const bind = (id, previewId) => {
+          const el = document.getElementById(id);
+          const preview = document.getElementById(previewId);
+
+          el.addEventListener("input", (e) => {
+              preview.innerText = e.target.value;
+          });
+      };
+
+      bind("name","p_name");
+      bind("brand","p_brand");
+      bind("series","p_series");
+      bind("range","p_range");
+      bind("purpose","p_purpose");
+      bind("quantity","p_quantity");
+      bind("usage","p_usage");
+      bind("description","p_description");
+      bind("cn","p_cn");
+      bind("category","p_category");
+      bind("price","p_price");
+
+      document.getElementById("image").addEventListener("change", function(e){
+          const file = e.target.files[0];
+
+          if(file){
+              const reader = new FileReader();
+
+              reader.onload = function(ev){
+                  document.getElementById("imgBox").innerHTML =
+                      `<img src="${ev.target.result}" />`;
+              };
+
+              reader.readAsDataURL(file);
+          }
+      });
+
+      document.getElementById("productForm").addEventListener("submit", function(e) {
+          e.preventDefault();
+
+          const imageFile = document.getElementById("image").files[0];
+
+          const formData = new URLSearchParams();
+
+          formData.append("name", document.getElementById("name").value);
+          formData.append("brand", document.getElementById("brand").value);
+          formData.append("product_series", document.getElementById("series").value);
+          formData.append("product_range", document.getElementById("range").value);
+          formData.append("purpose", document.getElementById("purpose").value);
+          formData.append("quantity", document.getElementById("quantity").value);
+          formData.append("cn_code", document.getElementById("cn").value);
+          formData.append("description", document.getElementById("description").value);
+          formData.append("usage_method", document.getElementById("usage").value);
+          formData.append("category", document.getElementById("category").value);
+          formData.append("price", document.getElementById("price").value);
+
+          if (imageFile) {
+              formData.append("image_path", imageFile.name);
+          }
+
+          fetch("/accessories-product", {
+              method: "POST",
+              body: formData
+          })
+          .then(res => res.text())
+          .then(data => {
+              console.log(data);
+              alert("Accessories product created!");
+          })
+          .catch(err => console.error(err));
+      });
+
+</script>
+
+</body>
+</html>

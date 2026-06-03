@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Orders</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins', sans-serif;
+        }
+
+        body{
+            display:flex;
+            min-height:100vh;
+            background:#fff;
+        }
+
+        /* SIDEBAR */
+        .sidebar{
+            width:220px;
+            background:#fff;
+            box-shadow:5px 0 20px rgba(0,0,0,0.05);
+            padding:20px;
+        }
+
+        .menu-item{
+            padding:12px;
+            margin-bottom:10px;
+            border-radius:10px;
+            cursor:pointer;
+            color:#666;
+        }
+
+        .menu-item:hover{
+            background:#f3e8ff;
+            color:#8d63c7;
+        }
+
+        /* MAIN */
+        .main{
+            flex:1;
+            padding:25px;
+            overflow:auto;
+        }
+
+        .title{
+            font-size:26px;
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+            border-radius:12px;
+            overflow:hidden;
+        }
+
+        th{
+            background:#f3e8ff;
+            padding:10px;
+            text-align:left;
+            color:#8d63c7;
+        }
+
+        td{
+            padding:10px;
+            border-bottom:1px solid #eee;
+        }
+
+        input{
+            width:100%;
+            padding:6px;
+        }
+
+        select{
+            padding:6px;
+        }
+
+        button{
+            padding:8px 12px;
+            background:#8d63c7;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        button:disabled{
+            background:#ccc;
+            cursor:not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Admin</h2>
+
+    <div class="menu-item" onclick="goToAdminPageMain()">
+        Dashboard
+    </div>
+
+    <div class="menu-item" onclick="goToAddCareProduct()">
+        Add Product Care
+    </div>
+
+    <div class="menu-item" onclick="goToAddAccessories()">
+        Add Accessories
+    </div>
+    <div class="menu-item" onclick="goToAddMakeup()">
+        Add Make Up
+    </div>
+
+    <div class="menu-item" onclick="goToOperations()">
+        Operations
+    </div>
+    <div class="menu-item" onclick="goToOrdersPage()">
+        Orders
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="title">Orders (State Pattern UI)</div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Products</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody id="ordersTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+    function goToAdminPageMain(){
+     window.location.href ="/frontend/html/admin_main_page.html";
+     }
+      function goToOperations(){
+     window.location.href ="/frontend/html/update_delete_admin.html";
+     }
+
+     function goToAddCareProduct(){
+         window.location.href = "/frontend/html/product_care_admin.html";
+     }
+     function goToAddAccessories(){
+     window.location.href = "/frontend/html/accesories_admin.html";
+ }
+    function goToAddMakeup(){
+     window.location.href = "/frontend/html/makeup_admin.html";
+   }
+ function goToOrdersPage(){
+     window.location.href = "/frontend/html/admin_orders_page.html";
+ }
+     function loadOrders(){
+
+         fetch("/admin/orders")
+             .then(r => r.json())
+             .then(data => {
+
+                 let html = "";
+
+                 data.forEach(o => {
+
+                     html += `
+                     <tr data-id="${o.id}" data-status="${o.status}">
+
+                         <td>${o.id}</td>
+
+                         <td><input class="fullName" value="${o.fullName || ""}"></td>
+                         <td><input class="phone" value="${o.phone || ""}"></td>
+                         <td><input class="email" value="${o.email || ""}"></td>
+                         <td><input class="address" value="${o.address || ""}"></td>
+                         <td><input class="products" value="${o.products || ""}"></td>
+                         <td><input class="total" value="${o.total || ""}"></td>
+
+                         <td>
+                             <select class="status" onchange="changeState(this)">
+                                 <option value="pending" ${o.status==="pending"?"selected":""}>pending</option>
+                                 <option value="delivered" ${o.status==="delivered"?"selected":""}>delivered</option>
+                             </select>
+                         </td>
+
+                         <td>${o.createdAt || ""}</td>
+
+                         <td>
+                             <button onclick="saveOrder(this)">Save</button>
+                         </td>
+
+                     </tr>`;
+                 });
+
+                 document.getElementById("ordersTable").innerHTML = html;
+
+                 document.querySelectorAll("tr[data-id]").forEach(row => {
+                     applyState(row, row.dataset.status);
+                 });
+             });
+     }
+
+     function changeState(select){
+
+         const row = select.closest("tr");
+         const status = select.value;
+
+         row.dataset.status = status;
+         applyState(row, status);
+     }
+
+     /* ===================== STATE LOGIC (UI) ===================== */
+     function applyState(row, status){
+
+         const inputs = row.querySelectorAll("input");
+
+         const saveBtn = row.querySelector("button");
+
+         if(status === "delivered"){
+             inputs.forEach(i => i.disabled = true);
+         }
+
+         if(status === "pending"){
+             inputs.forEach(i => i.disabled = false);
+         }
+
+         // IMPORTANT: save always enabled
+         saveBtn.disabled = false;
+     }
+
+     /* ===================== SAVE ===================== */
+     function saveOrder(btn){
+
+         const row = btn.closest("tr");
+
+         const body =
+             "id=" + row.dataset.id +
+             "&fullName=" + row.querySelector(".fullName").value +
+             "&phone=" + row.querySelector(".phone").value +
+             "&email=" + row.querySelector(".email").value +
+             "&address=" + row.querySelector(".address").value +
+             "&products=" + row.querySelector(".products").value +
+             "&total=" + row.querySelector(".total").value +
+             "&status=" + row.querySelector(".status").value;
+
+         fetch("/admin/orders/update", {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/x-www-form-urlencoded"
+             },
+             body: body
+         });
+     }
+
+     loadOrders();
+
+</script>
+
+</body>
+</html>

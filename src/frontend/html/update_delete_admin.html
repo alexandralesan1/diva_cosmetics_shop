@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Products</title>
+
+    <style>
+        /* ================= CSS EXACT STILUL TĂU ================= */
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins', sans-serif;
+        }
+
+        body{
+            height:100vh;
+            display:flex;
+            background:white;
+            overflow:hidden;
+        }
+
+        .circle1,.circle2{
+            position:absolute;
+            border-radius:50%;
+            z-index:0;
+            filter:blur(10px);
+        }
+
+        .circle1{
+            width:300px;
+            height:300px;
+            background:#f7c8ff;
+            top:-80px;
+            left:-80px;
+            opacity:0.5;
+        }
+
+        .circle2{
+            width:350px;
+            height:350px;
+            background:#d7c5ff;
+            bottom:-120px;
+            right:-120px;
+            opacity:0.5;
+        }
+
+        .sidebar{
+            width:220px;
+            background:white;
+            box-shadow:5px 0 20px rgba(0,0,0,0.05);
+            padding:20px;
+            z-index:1;
+        }
+
+        .sidebar h2{
+            color:#8d63c7;
+            margin-bottom:20px;
+        }
+
+        .menu-item{
+            padding:12px;
+            margin-bottom:10px;
+            border-radius:12px;
+            cursor:pointer;
+            color:#666;
+            transition:0.3s;
+        }
+
+        .menu-item:hover{
+            background:#f3e8ff;
+            color:#8d63c7;
+        }
+
+        .main{
+            flex:1;
+            display:flex;
+            gap:20px;
+            padding:30px;
+            z-index:1;
+            overflow:auto;
+            justify-content:flex-start;
+        }
+
+        /* ================= LEFT ================= */
+
+        .crud-left{
+            flex:1;
+        }
+
+        .type-buttons{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            margin-bottom:15px;
+        }
+
+        .type-buttons button{
+            width:auto;
+            padding:8px 14px;
+            font-size:13px;
+            background:#eee;
+            color:#333;
+            border-radius:10px;
+            border:none;
+            cursor:pointer;
+        }
+
+        .type-buttons button:hover{
+            background:#f3e8ff;
+            color:#8d63c7;
+        }
+
+        .product-list{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+
+        .product-item{
+            padding:12px;
+            border-radius:12px;
+            background:white;
+            box-shadow:0 5px 15px rgba(0,0,0,0.05);
+            cursor:pointer;
+            transition:0.2s;
+        }
+
+        .product-item:hover{
+            background:#f3e8ff;
+        }
+
+        /* ================= RIGHT ================= */
+
+        .crud-right{
+            flex:1;
+            background:white;
+            border-radius:18px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.08);
+            padding:20px;
+            height:fit-content;
+        }
+
+        .crud-right h3{
+            color:#8d63c7;
+            margin-bottom:15px;
+        }
+
+        .crud-right input,
+        .crud-right textarea{
+            width:100%;
+            margin-bottom:10px;
+            padding:10px;
+            border:1px solid #ddd;
+            border-radius:10px;
+            outline:none;
+        }
+
+        /* ================= BUTTONS (IN STILUL TĂU) ================= */
+
+        .crud-buttons{
+            display:flex;
+            gap:10px;
+        }
+
+        .crud-buttons button{
+            flex:1;
+            padding:10px;
+            border:none;
+            border-radius:12px;
+            cursor:pointer;
+            font-weight:600;
+            color:white;
+            transition:0.3s;
+        }
+
+        /* UPDATE = navy-purple dar în stil pastel */
+        .update-btn{
+            background:linear-gradient(135deg,#8d63c7,#5f4b8b);
+        }
+
+        /* DELETE = roz/mure pastel */
+        .delete-btn{
+            background:linear-gradient(135deg,#f3a6ff,#c94b7a);
+        }
+
+        .crud-buttons button:hover{
+            transform:translateY(-2px);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="circle1"></div>
+<div class="circle2"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Admin</h2>
+    <div class="menu-item" onclick="goToAdminPageMain()">
+        Dashboard
+    </div>
+
+    <div class="menu-item" onclick="goToAddCareProduct()">
+        Add Product Care
+    </div>
+
+    <div class="menu-item" onclick="goToAddAccessories()">
+        Add Accessories
+    </div>
+    <div class="menu-item" onclick="goToAddMakeup()">
+        Add Make Up
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- LEFT -->
+    <div class="crud-left">
+
+        <div class="type-buttons">
+            <button onclick="loadTable('foundation')">Foundation</button>
+            <button onclick="loadTable('concealer')">Concealer</button>
+            <button onclick="loadTable('mascara')">Mascara</button>
+            <button onclick="loadTable('lipstick')">Lipstick</button>
+            <button onclick="loadTable('blush')">Blush</button>
+        </div>
+
+        <div id="tableResult"></div>
+        <div id="productList" class="product-list"></div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="crud-right">
+
+        <h3>Product Editor</h3>
+
+        <input type="hidden" id="edit_id">
+
+        <input type="text" id="edit_name" placeholder="Name">
+        <input type="text" id="edit_age_category" placeholder="Age Category">
+        <input type="text" id="edit_brand" placeholder="Brand">
+        <input type="text" id="edit_product_series" placeholder="Product Series">
+        <input type="text" id="edit_product_range" placeholder="Product Range">
+        <input type="text" id="edit_purpose" placeholder="Purpose">
+        <input type="text" id="edit_volume" placeholder="Volume">
+        <input type="text" id="edit_ingredients" placeholder="Ingredients">
+        <input type="text" id="edit_image" placeholder="Image Path">
+        <input type="text" id="edit_cn_code" placeholder="CN Code">
+        <input type="text" id="edit_precautions" placeholder="Precautions">
+        <input type="text" id="edit_usage_method" placeholder="Usage Method">
+        <textarea id="edit_description" placeholder="Description"></textarea>
+
+        <input type="text" id="edit_category" placeholder="Category">
+        <input type="number" id="edit_price" placeholder="Price">
+
+        <!-- EXTRA FIELDS -->
+        <input type="text" id="edit_coverage" placeholder="Coverage">
+        <input type="text" id="edit_skin_type" placeholder="Skin Type">
+        <input type="text" id="edit_finish" placeholder="Finish">
+        <input type="text" id="edit_color" placeholder="Color">
+        <input type="text" id="edit_waterproof" placeholder="Waterproof">
+
+        <input type="text" id="edit_volume_effect" placeholder="Volume Effect">
+        <input type="text" id="edit_brush_type" placeholder="Brush Type">
+
+        <input type="text" id="edit_matte" placeholder="Matte">
+        <input type="text" id="edit_long_lasting" placeholder="Long Lasting">
+
+        <input type="text" id="edit_powder_or_cream" placeholder="Powder or Cream">
+        <input type="text" id="edit_shimmer" placeholder="Shimmer">
+
+        <div class="crud-buttons">
+            <button class="update-btn" onclick="updateProduct()">Update</button>
+            <button class="delete-btn" onclick="deleteProduct()">Delete</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function goToAdminPageMain(){
+        window.location.href = "/frontend/html/admin_main_page.html";
+    }
+
+    function goToAddCareProduct(){
+        window.location.href = "/frontend/html/product_care_admin.html";
+    }
+
+    function goToAddAccessories(){
+        window.location.href = "/frontend/html/accesories_admin.html";
+    }
+
+    function goToAddMakeup(){
+        window.location.href = "/frontend/html/makeup_admin.html";
+    }
+
+    function loadTable(type){
+
+        fetch(`/admin/products?type=${type}`)
+        .then(r => r.json())
+        .then(data => {
+
+            let html = "";
+
+            data.forEach((p, index) => {
+
+                html += `
+                    <div id="row-${index}"
+                        style="
+                            background:white;
+                            margin-bottom:15px;
+                            border-radius:14px;
+                            padding:15px;
+                            box-shadow:0 5px 15px rgba(0,0,0,0.05);
+                            cursor:pointer;
+                            transition:0.2s;
+                        "
+                        onmouseover="this.style.transform='scale(1.01)'"
+                        onmouseout="this.style.transform='scale(1)'"
+                    >
+
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; color:#5f4b8b;">
+                            <div>ID: ${p.id ?? ""}</div>
+                            <div>${p.name ?? ""}</div>
+                            <div>${p.price ?? ""}€</div>
+                        </div>
+
+                        <hr style="margin:10px 0;">
+
+                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; font-size:12px;">
+
+                            <div><b>Brand:</b> ${p.brand ?? ""}</div>
+                            <div><b>Age:</b> ${p.age_category ?? ""}</div>
+                            <div><b>Category:</b> ${p.category ?? ""}</div>
+
+                            <div><b>Series:</b> ${p.product_series ?? ""}</div>
+                            <div><b>Range:</b> ${p.product_range ?? ""}</div>
+                            <div><b>Volume:</b> ${p.volume ?? ""}</div>
+
+                            <div><b>Purpose:</b> ${p.purpose ?? ""}</div>
+                            <div><b>CN:</b> ${p.cn_code ?? ""}</div>
+                            <div><b>Image:</b> ${p.image_path ?? ""}</div>
+
+                            <div><b>Precautions:</b> ${p.precautions ?? ""}</div>
+                            <div><b>Usage:</b> ${p.usage_method ?? ""}</div>
+                            <div><b>Ingredients:</b> ${p.ingredients ?? ""}</div>
+
+                            <div style="grid-column: span 3;">
+                                <b>Description:</b> ${p.description ?? ""}
+                            </div>
+
+                            <div><b>Coverage:</b> ${p.coverage ?? ""}</div>
+                            <div><b>Skin:</b> ${p.skin_type ?? ""}</div>
+                            <div><b>Finish:</b> ${p.finish ?? ""}</div>
+
+                            <div><b>Color:</b> ${p.color ?? ""}</div>
+                            <div><b>Waterproof:</b> ${p.waterproof ?? ""}</div>
+                            <div><b>Volume Effect:</b> ${p.volume_effect ?? ""}</div>
+
+                            <div><b>Brush:</b> ${p.brush_type ?? ""}</div>
+                            <div><b>Matte:</b> ${p.matte ?? ""}</div>
+                            <div><b>Long lasting:</b> ${p.long_lasting ?? ""}</div>
+
+                            <div><b>Powder/Cream:</b> ${p.powder_or_cream ?? ""}</div>
+                            <div><b>Shimmer:</b> ${p.shimmer ?? ""}</div>
+
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("tableResult").innerHTML = html;
+
+            data.forEach((p, index) => {
+                document.getElementById(`row-${index}`)
+                    .onclick = () => loadProduct(p);
+            });
+
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById("tableResult").innerHTML =
+                "<p style='color:red'>Error loading products</p>";
+        });
+    }
+
+    function loadProduct(p){
+
+        document.getElementById("edit_id").value = p.id;
+
+        document.getElementById("edit_name").value = p.name;
+        document.getElementById("edit_age_category").value = p.age_category;
+        document.getElementById("edit_brand").value = p.brand;
+        document.getElementById("edit_product_series").value = p.product_series;
+        document.getElementById("edit_product_range").value = p.product_range;
+        document.getElementById("edit_purpose").value = p.purpose;
+        document.getElementById("edit_volume").value = p.volume;
+        document.getElementById("edit_ingredients").value = p.ingredients;
+        document.getElementById("edit_image").value = p.image_path;
+        document.getElementById("edit_cn_code").value = p.cn_code;
+        document.getElementById("edit_precautions").value = p.precautions;
+        document.getElementById("edit_usage_method").value = p.usage_method;
+        document.getElementById("edit_description").value = p.description;
+        document.getElementById("edit_category").value = p.category;
+        document.getElementById("edit_price").value = p.price;
+
+        document.getElementById("edit_coverage").value = p.coverage;
+        document.getElementById("edit_skin_type").value = p.skin_type;
+        document.getElementById("edit_finish").value = p.finish;
+        document.getElementById("edit_color").value = p.color;
+        document.getElementById("edit_waterproof").value = p.waterproof;
+
+        document.getElementById("edit_volume_effect").value = p.volume_effect;
+        document.getElementById("edit_brush_type").value = p.brush_type;
+
+        document.getElementById("edit_matte").value = p.matte;
+        document.getElementById("edit_long_lasting").value = p.long_lasting;
+
+        document.getElementById("edit_powder_or_cream").value = p.powder_or_cream;
+        document.getElementById("edit_shimmer").value = p.shimmer;
+    }
+
+    function updateProduct() {
+
+        const rawCategory = document.getElementById("edit_category").value;
+        const table = mapCategoryToTable(rawCategory);
+
+        if (!table) {
+            alert("Categorie invalidă: " + rawCategory);
+            return;
+        }
+
+        const baseData = {
+            id: document.getElementById("edit_id").value,
+            table: table,
+            name: document.getElementById("edit_name").value,
+            ageCategory: document.getElementById("edit_age_category").value,
+            brand: document.getElementById("edit_brand").value,
+            productSeries: document.getElementById("edit_product_series").value,
+            productRange: document.getElementById("edit_product_range").value,
+            purpose: document.getElementById("edit_purpose").value,
+            volume: document.getElementById("edit_volume").value,
+            ingredients: document.getElementById("edit_ingredients").value,
+            imagePath: document.getElementById("edit_image").value,
+            cnCode: document.getElementById("edit_cn_code").value,
+            precautions: document.getElementById("edit_precautions").value,
+            usageMethod: document.getElementById("edit_usage_method").value,
+            description: document.getElementById("edit_description").value,
+            category: rawCategory,
+            price: document.getElementById("edit_price").value,
+
+            coverage: document.getElementById("edit_coverage").value,
+            skinType: document.getElementById("edit_skin_type").value,
+            finish: document.getElementById("edit_finish").value,
+            color: document.getElementById("edit_color").value,
+            waterproof: document.getElementById("edit_waterproof").value,
+            volumeEffect: document.getElementById("edit_volume_effect").value,
+            brushType: document.getElementById("edit_brush_type").value,
+            matte: document.getElementById("edit_matte").value,
+            longLasting: document.getElementById("edit_long_lasting").value,
+            powderOrCream: document.getElementById("edit_powder_or_cream").value,
+            shimmer: document.getElementById("edit_shimmer").value
+        };
+
+        fetch("/admin/products/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(baseData)
+        })
+        .then(r => r.text())
+        .then(alert)
+        .catch(err => {
+            console.error(err);
+            alert("Update failed");
+        });
+    }
+
+    function deleteProduct() {
+
+        const rawCategory = document.getElementById("edit_category").value;
+        const table = mapCategoryToTable(rawCategory);
+        const id = document.getElementById("edit_id").value;
+
+        fetch(`/admin/products/delete?table=${encodeURIComponent(table)}&id=${encodeURIComponent(id)}`, {
+            method: "DELETE"
+        })
+        .then(r => r.text())
+        .then(alert)
+        .catch(err => {
+            console.error(err);
+            alert("Delete failed");
+        });
+    }
+
+    function mapCategoryToTable(category) {
+
+        if (!category) throw new Error("Category is empty");
+
+        const normalized = category.toLowerCase().trim();
+
+        switch(normalized) {
+            case "foundation": return "products_foundation";
+            case "concealer": return "products_concealer";
+            case "mascara": return "products_mascara";
+            case "lipstick": return "products_lipstick";
+            case "blush": return "products_blush";
+            default: throw new Error("Invalid category: " + category);
+        }
+    }
+
+</script>
+</body>
+</html>

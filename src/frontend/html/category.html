@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diva Cosmetics - Category</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins', sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background:white;
+            overflow-x:hidden;
+        }
+
+        /* BACKGROUND */
+        .circle1,.circle2{
+            position:absolute;
+            border-radius:50%;
+            z-index:0;
+            filter:blur(10px);
+        }
+
+        .circle1{
+            width:300px;height:300px;
+            background:#f7c8ff;
+            top:-80px;left:-80px;
+            opacity:0.5;
+        }
+
+        .circle2{
+            width:350px;height:350px;
+            background:#d7c5ff;
+            bottom:-120px;right:-120px;
+            opacity:0.5;
+        }
+
+        /* TOPBAR */
+        .topbar{
+            width:100%;
+            height:70px;
+            background:white;
+            box-shadow:0 5px 20px rgba(0,0,0,0.05);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:0 30px;
+            position:relative;
+            z-index:1;
+        }
+
+        .logo{
+            font-size:30px;
+            font-family:'Great Vibes', cursive;
+            color:#8d63c7;
+        }
+
+        .menu{
+            display:flex;
+            gap:20px;
+            align-items:center;
+        }
+
+        .menu a{
+            text-decoration:none;
+            color:#777;
+        }
+
+        .menu a:hover{
+            color:#8d63c7;
+        }
+
+        .login-btn{
+            background:#8d63c7;
+            color:white;
+            padding:8px 14px;
+            border-radius:12px;
+            text-decoration:none;
+        }
+
+        .cart{
+            background:#f3e8ff;
+            padding:8px 12px;
+            border-radius:12px;
+            color:#8d63c7;
+        }
+
+        /* HERO */
+        .hero{
+            text-align:center;
+            margin-top:35px;
+        }
+
+        .hero h1{
+            font-family:'Great Vibes', cursive;
+            font-size:42px;
+            color:#8d63c7;
+        }
+
+        /* PRODUCTS */
+        .products{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:20px;
+            padding:40px;
+            position:relative;
+            z-index:1;
+        }
+
+        .product-card{
+            background:white;
+            border-radius:18px;
+            padding:15px;
+            text-align:center;
+            box-shadow:0 10px 25px rgba(0,0,0,0.06);
+            transition:0.3s;
+            cursor:pointer;
+        }
+
+        .product-card:hover{
+            transform:translateY(-5px);
+        }
+
+        .product-card img{
+            width:100%;
+            height:150px;
+            object-fit:cover;
+            border-radius:12px;
+        }
+
+        .product-card h3{
+            color:#8d63c7;
+            margin-top:10px;
+        }
+
+        .product-card p{
+            color:#777;
+            font-size:14px;
+        }
+
+        .price{
+            font-weight:600;
+            color:#333;
+            margin-top:8px;
+        }
+
+        /* MODAL */
+        .modal{
+            display:none;
+            position:fixed;
+            top:0;left:0;
+            width:100%;height:100%;
+            background:rgba(0,0,0,0.5);
+            z-index:9999;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .modal-content{
+            background:white;
+            padding:20px;
+            border-radius:16px;
+            width:400px;
+            max-height:80vh;
+            overflow-y:auto;
+        }
+
+        .close{
+            float:right;
+            cursor:pointer;
+            font-size:18px;
+            color:#777;
+        }
+
+        .detail-row{
+            margin:6px 0;
+            font-size:14px;
+            color:#333;
+        }
+
+        .add-cart-btn{
+            margin-top:15px;
+            width:100%;
+            padding:10px;
+            background:#8d63c7;
+            color:white;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="circle1"></div>
+<div class="circle2"></div>
+
+<div class="topbar">
+    <div class="logo">Diva Cosmetics</div>
+
+    <div class="menu">
+        <a href="/frontend/html/main_page.html">Home</a>
+        <a href="/frontend/html/category.html?category=care">Care</a>
+        <a href="/frontend/html/category.html?category=foundation">Foundation</a>
+        <a href="/frontend/html/category.html?category=concealer">Concealer</a>
+        <a href="/frontend/html/category.html?category=mascara">Mascara</a>
+        <a href="/frontend/html/category.html?category=lipstick">Lipstick</a>
+        <a href="/frontend/html/category.html?category=blush">Blush</a>
+        <a href="/frontend/html/category.html?category=accessories">Accessories</a>
+
+        <a class="login-btn" href="/frontend/html/login.html">Login</a>
+        <a class="cart" href="/frontend/html/cart.html">🛒 Cart</a>
+    </div>
+</div>
+
+<div class="hero">
+    <h1 id="title">Category</h1>
+</div>
+
+<div style="text-align:center;margin-top:20px;">
+    <input type="number" id="minPrice" placeholder="Min price">
+    <input type="number" id="maxPrice" placeholder="Max price">
+    <button onclick="applyFilter()">Filter</button>
+</div>
+
+<div id="container" class="products"></div>
+
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeProductModal()">✖</span>
+        <div id="productDetails"></div>
+        <button class="add-cart-btn" onclick="addToCart()">Adaugă în coș</button>
+    </div>
+</div>
+
+<script>
+
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category");
+
+    document.getElementById("title").innerText =
+        category ? category.charAt(0).toUpperCase() + category.slice(1) : "Category";
+
+    /* =========================
+       LOAD & RENDER
+    ========================= */
+
+    async function loadComposite() {
+        const res = await fetch(`/category-products?category=${category}`);
+        const data = await res.json();
+        render(data);
+    }
+
+    function mapCategoryToTable(category) {
+        switch(category) {
+            case "blush":        return "products_blush";
+            case "mascara":      return "products_mascara";
+            case "lipstick":     return "products_lipstick";
+            case "foundation":   return "products_foundation";
+            case "concealer":    return "products_concealer";
+            case "care":         return "products_care";
+            case "accessories":  return "products_accessories";
+            default:             return null;
+        }
+    }
+
+    async function loadProxy(min, max) {
+        const tableName = mapCategoryToTable(category);
+        let url = `/proxy/category?category=${tableName}`;
+
+        if (min) url += `&min=${min}`;
+        if (max) url += `&max=${max}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        render(data);
+    }
+
+    function render(products) {
+        const container = document.getElementById("container");
+
+        container.innerHTML = products.map(p => `
+            <div class="product-card"
+                 data-id="${p.id}"
+                 data-table="${p.sourceTable || p.source_table || ''}">
+
+                <img src="/images/${p.image_path}"
+                     alt="${p.name}"
+                     onerror="this.src='/images/placeholder.png'">
+                <h3>${p.name}</h3>
+                <p>${p.brand || ""}</p>
+                <div class="price">${Number(p.price).toFixed(2)} MDL</div>
+            </div>
+        `).join("");
+
+        initCardListeners();
+    }
+
+    function applyFilter() {
+        loadProxy(
+            document.getElementById("minPrice").value,
+            document.getElementById("maxPrice").value
+        );
+    }
+
+    /* =========================
+       SINGLE PRODUCT — identic main_page.html
+    ========================= */
+
+    let selectedProduct = null;
+
+    function initCardListeners() {
+        document.querySelectorAll(".product-card").forEach(card => {
+            card.addEventListener("click", () => {
+                const id = parseInt(card.dataset.id, 10);
+                const table = card.dataset.table;
+
+                if (isNaN(id) || id <= 0) return;
+
+                openProductModal(id, table);
+            });
+        });
+    }
+
+    async function openProductModal(id, sourceTable) {
+        try {
+            const url = sourceTable
+                ? `/observer/product?id=${id}&table=${sourceTable}`
+                : `/observer/product?id=${id}`;
+
+            const res = await fetch(url);
+
+            if (!res.ok) {
+                console.error("Observer error:", res.status, "| URL:", url);
+                return;
+            }
+
+            const fullProduct = await res.json();
+
+            selectedProduct = fullProduct;
+
+            const container = document.getElementById("productDetails");
+
+            const exclude = new Set(["id", "image_path"]);
+
+            let html = `<h2>${fullProduct.name}</h2>`;
+
+            Object.entries(fullProduct).forEach(([key, value]) => {
+                if (exclude.has(key)) return;
+                if (value === null || value === undefined || value === "") return;
+
+                html += `
+                    <div class="detail-row">
+                        <b>${formatKey(key)}:</b> ${value}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            document.getElementById("productModal").style.display = "flex";
+
+        } catch (err) {
+            console.error("Eroare la deschiderea produsului:", err);
+        }
+    }
+
+    function formatKey(key) {
+        return key
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function closeProductModal() {
+        document.getElementById("productModal").style.display = "none";
+        selectedProduct = null;
+    }
+
+    /* =========================
+       ADD TO CART — identic main_page.html
+    ========================= */
+
+    async function addToCart() {
+        if (!selectedProduct) return;
+
+        const id    = selectedProduct.id;
+        const table = selectedProduct.source_table || "";
+
+        try {
+            const url = table
+                ? `/observer/add-to-cart?id=${id}&table=${table}`
+                : `/observer/add-to-cart?id=${id}`;
+
+            const res = await fetch(url);
+            const msg = await res.text();
+            alert(msg);
+
+        } catch (err) {
+            console.error("Eroare la adăugare în coș:", err);
+        }
+    }
+
+    loadComposite();
+
+</script>
+
+</body>
+</html>
