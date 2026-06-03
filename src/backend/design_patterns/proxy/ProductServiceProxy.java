@@ -3,11 +3,12 @@ package backend.design_patterns.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductServiceProxy {
+public class ProductServiceProxy implements IProductService {
 
     private final ProductService service =
             new ProductService();
 
+    @Override
     public List<String> getProducts(
             String category,
             Double min,
@@ -15,7 +16,7 @@ public class ProductServiceProxy {
     ) {
 
         List<String> products =
-                service.getProducts(category);
+                service.getProducts(category, null, null);
 
         List<String> filtered = new ArrayList<>();
 

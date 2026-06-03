@@ -4,12 +4,13 @@ import backend.design_patterns.composite.CategoryProductService;
 
 import java.util.List;
 
-public class ProductService {
+public class ProductService implements IProductService {
 
     private final CategoryProductService service =
             new CategoryProductService();
 
-    public List<String> getProducts(String category) {
+    @Override
+    public List<String> getProducts(String category, Double min, Double max) {
         return service.getProducts(category);
     }
 }

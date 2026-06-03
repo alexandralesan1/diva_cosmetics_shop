@@ -195,6 +195,68 @@
             border-radius:10px;
             cursor:pointer;
         }
+
+/* =========================
+   FILTER INLINE BAR STYLING
+========================= */
+
+div[style*="text-align:center"][style*="margin-top"]{
+    margin-top: 25px !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px 16px;
+}
+
+/* INPUTS */
+div[style*="text-align:center"] input{
+    padding: 10px 14px;
+    width: 140px;
+
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    outline: none;
+
+    font-size: 14px;
+    background: #fff;
+
+    transition: 0.25s ease;
+}
+
+/* focus effect */
+div[style*="text-align:center"] input:focus{
+    border-color: #8d63c7;
+    box-shadow: 0 0 0 3px rgba(141, 99, 199, 0.18);
+}
+
+/* BUTTON */
+div[style*="text-align:center"] button{
+    padding: 10px 18px;
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #8d63c7, #b28df0);
+    color: #fff;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+/* hover */
+div[style*="text-align:center"] button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(141, 99, 199, 0.25);
+}
+
+/* click */
+div[style*="text-align:center"] button:active{
+    transform: scale(0.97);
+}
     </style>
 </head>
 
@@ -250,7 +312,7 @@
         category ? category.charAt(0).toUpperCase() + category.slice(1) : "Category";
 
     /* =========================
-       LOAD & RENDER
+       LOAD & RENDER (NU MODIFICAT LOGICA)
     ========================= */
 
     async function loadComposite() {
@@ -285,20 +347,28 @@
     }
 
     function render(products) {
+
         const container = document.getElementById("container");
 
         container.innerHTML = products.map(p => `
+
             <div class="product-card"
                  data-id="${p.id}"
-                 data-table="${p.sourceTable || p.source_table || ''}">
+                 data-table="${p.sourceTable ?? p.source_table ?? mapCategoryToTable(category)}">
 
                 <img src="/images/${p.image_path}"
                      alt="${p.name}"
                      onerror="this.src='/images/placeholder.png'">
+
                 <h3>${p.name}</h3>
                 <p>${p.brand || ""}</p>
-                <div class="price">${Number(p.price).toFixed(2)} MDL</div>
+
+                <div class="price">
+                    ${Number(p.price).toFixed(2)} MDL
+                </div>
+
             </div>
+
         `).join("");
 
         initCardListeners();
@@ -312,28 +382,41 @@
     }
 
     /* =========================
-       SINGLE PRODUCT — identic main_page.html
+       SINGLE PRODUCT PAGE — FIXAT IDENTIC MAIN_PAGE
     ========================= */
 
     let selectedProduct = null;
 
     function initCardListeners() {
+
         document.querySelectorAll(".product-card").forEach(card => {
+
             card.addEventListener("click", () => {
+
                 const id = parseInt(card.dataset.id, 10);
-                const table = card.dataset.table;
+
+                const table =
+                    card.dataset.table ||
+                    mapCategoryToTable(category);
 
                 if (isNaN(id) || id <= 0) return;
 
                 openProductModal(id, table);
             });
+
         });
     }
 
     async function openProductModal(id, sourceTable) {
+
         try {
-            const url = sourceTable
-                ? `/observer/product?id=${id}&table=${sourceTable}`
+
+            const safeTable =
+                sourceTable ||
+                mapCategoryToTable(category);
+
+            const url = safeTable
+                ? `/observer/product?id=${id}&table=${safeTable}`
                 : `/observer/product?id=${id}`;
 
             const res = await fetch(url);
@@ -354,6 +437,7 @@
             let html = `<h2>${fullProduct.name}</h2>`;
 
             Object.entries(fullProduct).forEach(([key, value]) => {
+
                 if (exclude.has(key)) return;
                 if (value === null || value === undefined || value === "") return;
 
@@ -385,28 +469,38 @@
     }
 
     /* =========================
-       ADD TO CART — identic main_page.html
+       ADD TO CART — FIX IDENTIC MAIN_PAGE
     ========================= */
 
     async function addToCart() {
+
         if (!selectedProduct) return;
 
-        const id    = selectedProduct.id;
-        const table = selectedProduct.source_table || "";
+        const id = selectedProduct.id;
+
+        const table =
+            selectedProduct.source_table ||
+            mapCategoryToTable(category);
 
         try {
+
             const url = table
                 ? `/observer/add-to-cart?id=${id}&table=${table}`
                 : `/observer/add-to-cart?id=${id}`;
 
             const res = await fetch(url);
             const msg = await res.text();
+
             alert(msg);
 
         } catch (err) {
             console.error("Eroare la adăugare în coș:", err);
         }
     }
+
+    /* =========================
+       INIT
+    ========================= */
 
     loadComposite();
 
